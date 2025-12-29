@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>小公主的數學遊戲</title>
+    <style>
+        body { 
+            font-family: 'Arial Rounded MT Bold', -apple-system, sans-serif; 
+            text-align: center; 
+            background-color: #FFF5F7; 
+            margin: 0; 
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            touch-action: manipulation;
+        }
+        #feedback { 
+            font-size: 40px; 
+            margin-bottom: 20px;
+            color: #FF85A1;
+            height: 50px;
+        }
+        #question { 
+            font-size: 90px; 
+            color: #5D5D5D; 
+            margin: 20px 0;
+            background: white;
+            padding: 20px 40px;
+            border-radius: 30px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+        }
+        .options-container { 
+            display: flex; 
+            justify-content: center; 
+            gap: 25px; 
+            margin-top: 30px;
+        }
+        .option-btn { 
+            width: 110px; 
+            height: 110px; 
+            font-size: 45px; 
+            cursor: pointer; 
+            border: none; 
+            border-radius: 25px; 
+            background-color: #70D6FF; 
+            color: white;
+            box-shadow: 0 8px #59b2d6;
+            transition: all 0.2s;
+        }
+        /* 答對的顏色 */
+        .correct { background-color: #FFD670 !important; box-shadow: 0 8px #e6c165 !important; }
+        /* 答錯的顏色 */
+        .wrong { background-color: #FF70A6 !important; box-shadow: 0 8px #d65c8a !important; }
+    </style>
+</head>
+<body>
+
+    <div id="feedback">準備好了嗎？加油！</div>
+    <div id="question">載入中...</div>
+    
+    <div class="options-container">
+        <button class="option-btn" onclick="checkAnswer(this)">?</button>
+        <button class="option-btn" onclick="checkAnswer(this)">?</button>
+        <button class="option-btn" onclick="checkAnswer(this)">?</button>
+    </div>
+
+    <script>
+        let correctAnswer;
+
+        function generateQuestion() {
+            const feedback = document.getElementById('feedback');
+            const questionEl = document.getElementById('question');
+            const btns = document.querySelectorAll('.option-btn');
+
+            feedback.innerText = "🌟 認真數一數...";
+            
+            let isAddition = Math.random() > 0.5;
+            let num1, num2;
+
+            if (isAddition) {
+                num1 = Math.floor(Math.random() * 4) + 1; 
+                num2 = Math.floor(Math.random() * (5 - num1 + 1)); 
+                correctAnswer = num1 + num2;
+                questionEl.innerText = num1 + " + " + num2;
+            } else {
+                num1 = Math.floor(Math.random() * 5) + 1; 
+                num2 = Math.floor(Math.random() * (num1 + 1)); 
+                correctAnswer = num1 - num2;
+                questionEl.innerText = num1 + " - " + num2;
+            }
+
+            let choices = [correctAnswer];
+            while (choices.length < 3) {
+                let wrong = Math.floor(Math.random() * 6);
+                if (!choices.includes(wrong)) choices.push(wrong);
+            }
+            
+            choices.sort(() => Math.random() - 0.5);
+
+            btns.forEach((btn, i) => {
+                btn.innerText = choices[i];
+                btn.className = "option-btn"; // 重設顏色
+                btn.disabled = false;
+            });
+        }
+
+        function checkAnswer(btn) {
+            const btns = document.querySelectorAll('.option-btn');
+            
+            if (parseInt(btn.innerText) === correctAnswer) {
+                document.getElementById('feedback').innerText = "❤️❤️❤️❤️❤️ 太棒了！妳好聰明！";
+                btn.classList.add('correct');
+                
+                // 鎖定所有按鈕，防止重複點擊
+                btns.forEach(b => b.disabled = true);
+                
+                // 設定為 2 秒後換題 (2000 毫秒)
+                setTimeout(generateQuestion, 2000);
+            } else {
+                document.getElementById('feedback').innerText = "😮 再試一次看看？";
+                btn.classList.add('wrong');
+            }
+        }
+
+        // 啟動遊戲
+        window.onload = generateQuestion;
+    </script>
+</body>
+</html>
